@@ -1,0 +1,111 @@
+{
+	"name": "df_silver_diagnosticos",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_bronze_diagnosticos",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_silver_diagnosticos",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "derivedColumn2"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          diagnosis_id as string,",
+				"          admission_id as string,",
+				"          icd_code as string,",
+				"          diagnosis_description as string,",
+				"          severity as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source1",
+				"source1 derive(icd_code = iif(\r",
+				"    isNull(icd_code) || trim(toString(icd_code)) == '',\r",
+				"    toString(null()),\r",
+				"    upper(\r",
+				"        replace(\r",
+				"            replace(\r",
+				"                replace(trim(toString(icd_code)), ' ', ''),\r",
+				"                '-',\r",
+				"                '.'\r",
+				"            ),\r",
+				"            ',',\r",
+				"            ', '\r",
+				"        )\r",
+				"    )\r",
+				")) ~> derivedColumn1",
+				"derivedColumn1 derive(icd_code = replace(\r",
+				"    replace(\r",
+				"        replace(\r",
+				"            replace(\r",
+				"                replace(\r",
+				"                    replace(\r",
+				"                        replace(\r",
+				"                            replace(toString(icd_code), 'M545', 'M54.5'),\r",
+				"                            'N390', 'N39.0'\r",
+				"                        ),\r",
+				"                        'F329', 'F32.9'\r",
+				"                    ),\r",
+				"                    'J45909', 'J45.909'\r",
+				"                ),\r",
+				"                'C50911', 'C50.911'\r",
+				"            ),\r",
+				"            'E119', 'E11.9'\r",
+				"        ),\r",
+				"        'K219', 'K21.9'\r",
+				"    ),\r",
+				"    'S72001A', 'S72.001A'\r",
+				"),",
+				"          diagnosis_description = iif(\r",
+				"    isNull(diagnosis_description) || trim(toString(diagnosis_description)) == '',\r",
+				"    toString(null()),\r",
+				"    trim(toString(diagnosis_description))\r",
+				"),",
+				"          severity = iif(\r",
+				"    isNull(severity) || trim(toString(severity)) == '',\r",
+				"    toString(null()),\r",
+				"    initCap(lower(trim(toString(severity))))\r",
+				")) ~> derivedColumn2",
+				"derivedColumn2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          diagnosis_id as integer,",
+				"          admission_id as integer,",
+				"          icd_code as string,",
+				"          diagnosis_description as string,",
+				"          severity as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+			]
+		}
+	}
+}
