@@ -734,6 +734,9 @@
 					"transformations": [
 						{
 							"name": "derivedColumn1"
+						},
+						{
+							"name": "alterRow1"
 						}
 					],
 					"scriptLines": [
@@ -803,7 +806,8 @@
 						"        )\r",
 						"    )\r",
 						")) ~> derivedColumn1",
-						"derivedColumn1 sink(allowSchemaDrift: true,",
+						"derivedColumn1 alterRow(upsertIf(true())) ~> alterRow1",
+						"alterRow1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
 						"          billing_id as integer,",
@@ -815,8 +819,9 @@
 						"     ),",
 						"     deletable:false,",
 						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
+						"     updateable:true,",
+						"     upsertable:true,",
+						"     keys:['billing_id'],",
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
