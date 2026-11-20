@@ -638,7 +638,7 @@
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     query: 'SELECT a.*\\nFROM bronze.admissions a\\nWHERE EXISTS (\\n    SELECT 1\\n    FROM bronze.patients p\\n    WHERE p.patient_id = a.patient_id\\n)',",
+						"     query: 'SELECT a.*\\nFROM bronze.admissions a\\nWHERE EXISTS (\\n    SELECT 1\\n    FROM silver.patients p\\n    WHERE p.patient_id = a.patient_id\\n)',",
 						"     format: 'query') ~> source1",
 						"source1 derive(admission_date = iif(\r",
 						"    isNull(admission_date) || trim(toString(admission_date)) == '',\r",
