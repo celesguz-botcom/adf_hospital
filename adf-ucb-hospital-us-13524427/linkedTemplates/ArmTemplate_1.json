@@ -1,0 +1,339 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "adf-ucb-hospital-us-13524427"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/df_silver_pacientes')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "df_silver"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_bronze_pacientes",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_silver_pacientes",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "derivedColumn2"
+						},
+						{
+							"name": "alterRow1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          patient_id as string,",
+						"          full_name as string,",
+						"          gender as string,",
+						"          date_of_birth as string,",
+						"          phone as string,",
+						"          email as string,",
+						"          address as string,",
+						"          insurance_provider as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> source1",
+						"source1 derive(gender = iif(lower(trim(gender)) == 'm' || lower(trim(gender)) == 'male',    'Male',    iif(        lower(trim(gender)) == 'f' || lower(trim(gender)) == 'female',        'Female',        'Other'    )),",
+						"          full_name = iif(\r",
+						"    isNull(full_name) || trim(toString(full_name)) == '',\r",
+						"    toString(null()),\r",
+						"    regexReplace(trim(toString(full_name)), 'Ã‚+$', '')\r",
+						"),",
+						"          date_of_birth = iif(\r",
+						"    isNull(date_of_birth) || trim(toString(date_of_birth)) == '',\r",
+						"    toDate(null()),\r",
+						"    iif(\r",
+						"        regexMatch(toString(date_of_birth), '^[A-Za-z]+ [0-9]{1,2}, [0-9]{4}$'),\r",
+						"        toDate(toString(date_of_birth), 'MMMM dd, yyyy'),\r",
+						"        iif(\r",
+						"            regexMatch(toString(date_of_birth), '^[0-9]{2}-[0-9]{2}-[0-9]{2}$'),\r",
+						"            toDate(toString(date_of_birth), 'MM-dd-yy'),\r",
+						"            iif(\r",
+						"                regexMatch(toString(date_of_birth), '^[0-9]{2}-[A-Za-z]{3}-[0-9]{4}$'),\r",
+						"                toDate(toString(date_of_birth), 'dd-MMM-yyyy'),\r",
+						"                iif(\r",
+						"                    regexMatch(toString(date_of_birth), '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'),\r",
+						"                    toDate(toString(date_of_birth), 'yyyy-MM-dd'),\r",
+						"                    toDate(toString(date_of_birth), 'MM/dd/yyyy')\r",
+						"                )\r",
+						"            )\r",
+						"        )\r",
+						"    )\r",
+						")) ~> derivedColumn1",
+						"derivedColumn1 derive(phone = iif(\r",
+						"    isNull(phone) || lower(trim(toString(phone))) == '' ||\r",
+						"    lower(trim(toString(phone))) == 'unknown' ||\r",
+						"    lower(trim(toString(phone))) == 'n/a',\r",
+						"    toString(null()),\r",
+						"    regexReplace(trim(toString(phone)), '[^0-9+]', '')\r",
+						"),",
+						"          email = iif(\r",
+						"    isNull(email) || trim(toString(email)) == '' ||\r",
+						"    lower(trim(toString(email))) == 'unknown' ||\r",
+						"    lower(trim(toString(email))) == 'n/a',\r",
+						"    toString(null()),\r",
+						"    lower(\r",
+						"        replace(\r",
+						"            replace(\r",
+						"                replace(\r",
+						"                    replace(trim(toString(email)), ' at ', '@'),\r",
+						"                    ',',\r",
+						"                    '.'\r",
+						"                ),\r",
+						"                ' ',\r",
+						"                ''\r",
+						"            ),\r",
+						"            'gmial.com',\r",
+						"            'gmail.com'\r",
+						"        )\r",
+						"    )\r",
+						"),",
+						"          address = iif(\r",
+						"    isNull(address) || trim(toString(address)) == '',\r",
+						"    toString(null()),\r",
+						"    trim(toString(address))\r",
+						"),",
+						"          insurance_provider = iif(\r",
+						"    isNull(insurance_provider) ||\r",
+						"    trim(toString(insurance_provider)) == '' ||\r",
+						"    lower(trim(toString(insurance_provider))) == 'unknown' ||\r",
+						"    lower(trim(toString(insurance_provider))) == 'n/a',\r",
+						"    'Not Specified',\r",
+						"    iif(\r",
+						"        lower(replace(replace(replace(trim(toString(insurance_provider)), '-', ''), ' ', ''), '.', '')) == 'bluecross',\r",
+						"        'Blue Cross',\r",
+						"        iif(\r",
+						"            lower(replace(replace(replace(trim(toString(insurance_provider)), '-', ''), ' ', ''), '.', '')) == 'medicare',\r",
+						"            'Medicare',\r",
+						"            iif(\r",
+						"                lower(replace(replace(replace(trim(toString(insurance_provider)), '-', ''), ' ', ''), '.', '')) == 'unitedhealth' ||\r",
+						"                lower(replace(replace(replace(trim(toString(insurance_provider)), '-', ''), ' ', ''), '.', '')) == 'uhc',\r",
+						"                'United Health',\r",
+						"                iif(\r",
+						"    lower(replace(replace(replace(trim(toString(insurance_provider)), '-', ''), ' ', ''), '.', '')) == 'selfpay',\r",
+						"    'Self Pay',\r",
+						"    initCap(trim(toString(insurance_provider)))\r",
+						")\r",
+						"            )\r",
+						"        )\r",
+						"    )\r",
+						")) ~> derivedColumn2",
+						"derivedColumn2 alterRow(upsertIf(true())) ~> alterRow1",
+						"alterRow1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          patient_id as integer,",
+						"          full_name as string,",
+						"          gender as string,",
+						"          date_of_birth as date,",
+						"          phone as string,",
+						"          email as string,",
+						"          address as string,",
+						"          insurance_provider as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:true,",
+						"     upsertable:true,",
+						"     keys:['patient_id'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_silver')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_silver_pacientes",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "Data flow2",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "Data flow1",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_silver_admisiones",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "Data flow3",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "Data flow2",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_silver_diagnosticos",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "Data flow4",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "Data flow3",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_silver_facturacion",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/df_silver_pacientes')]"
+			]
+		}
+	]
+}

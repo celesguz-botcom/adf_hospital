@@ -197,6 +197,9 @@
 					"referenceName": "ls_sql_hospital",
 					"type": "LinkedServiceReference"
 				},
+				"folder": {
+					"name": "ds_bronze"
+				},
 				"annotations": [],
 				"type": "AzureSqlTable",
 				"schema": [
@@ -243,6 +246,9 @@
 					"referenceName": "ls_sql_hospital",
 					"type": "LinkedServiceReference"
 				},
+				"folder": {
+					"name": "ds_bronze"
+				},
 				"annotations": [],
 				"type": "AzureSqlTable",
 				"schema": [
@@ -284,6 +290,9 @@
 				"linkedServiceName": {
 					"referenceName": "ls_sql_hospital",
 					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "ds_bronze"
 				},
 				"annotations": [],
 				"type": "AzureSqlTable",
@@ -331,6 +340,9 @@
 					"referenceName": "ls_sql_hospital",
 					"type": "LinkedServiceReference"
 				},
+				"folder": {
+					"name": "ds_bronze"
+				},
 				"annotations": [],
 				"type": "AzureSqlTable",
 				"schema": [
@@ -377,6 +389,413 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/ds_gold_dim_departamento')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_sql_hospital",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "ds_gold"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "departamento_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "nombre_departamento",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "gold",
+					"table": "dim_departamento"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_sql_hospital')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_gold_dim_diagnostico')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_sql_hospital",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "ds_gold"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "diagnostico_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "codigo_icd",
+						"type": "varchar"
+					},
+					{
+						"name": "descripcion_patologia",
+						"type": "nvarchar"
+					},
+					{
+						"name": "nivel_severidad",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "gold",
+					"table": "dim_diagnostico"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_sql_hospital')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_gold_dim_fecha')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_sql_hospital",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "ds_gold"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "fecha_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "fecha_completa",
+						"type": "date"
+					},
+					{
+						"name": "anio",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "trimestre",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "trimestre_nombre",
+						"type": "varchar"
+					},
+					{
+						"name": "mes",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "mes_nombre",
+						"type": "varchar"
+					},
+					{
+						"name": "mes_corto",
+						"type": "char"
+					},
+					{
+						"name": "semana_anio",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "dia_mes",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "dia_semana",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "dia_nombre",
+						"type": "varchar"
+					},
+					{
+						"name": "es_fin_de_semana",
+						"type": "bit"
+					}
+				],
+				"typeProperties": {
+					"schema": "gold",
+					"table": "dim_fecha"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_sql_hospital')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_gold_dim_paciente')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_sql_hospital",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "ds_gold"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "paciente_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "patient_id_bk",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "nombre_completo",
+						"type": "nvarchar"
+					},
+					{
+						"name": "genero",
+						"type": "varchar"
+					},
+					{
+						"name": "fecha_nacimiento",
+						"type": "date"
+					},
+					{
+						"name": "rango_etario",
+						"type": "varchar"
+					},
+					{
+						"name": "correo_electronico",
+						"type": "varchar"
+					},
+					{
+						"name": "direccion",
+						"type": "nvarchar"
+					},
+					{
+						"name": "proveedor_seguro",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "gold",
+					"table": "dim_paciente"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_sql_hospital')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_gold_dim_servicio_cargo')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_sql_hospital",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "ds_gold"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "servicio_cargo_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "tipo_cargo",
+						"type": "varchar"
+					},
+					{
+						"name": "estado_pago",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "gold",
+					"table": "dim_servicio_cargo"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_sql_hospital')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_gold_fact_admisiones')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_sql_hospital",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "ds_gold"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "admision_key",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "admission_id_bk",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "paciente_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "departamento_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "diagnostico_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "fecha_ingreso_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "fecha_alta_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "medico_id",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "dias_estancia",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "conteo_admisiones",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "gold",
+					"table": "fact_admisiones"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_sql_hospital')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_gold_fact_facturacion')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_sql_hospital",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "ds_gold"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "facturacion_key",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "billing_id_bk",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "admission_id_bk",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "paciente_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "departamento_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "servicio_cargo_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "fecha_pago_key",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "monto_facturado",
+						"type": "decimal",
+						"precision": 12,
+						"scale": 2
+					},
+					{
+						"name": "conteo_transacciones",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "gold",
+					"table": "fact_facturacion"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_sql_hospital')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ds_silver_admisiones')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -384,6 +803,9 @@
 				"linkedServiceName": {
 					"referenceName": "ls_sql_hospital",
 					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "ds_silver"
 				},
 				"annotations": [],
 				"type": "AzureSqlTable",
@@ -434,6 +856,9 @@
 					"referenceName": "ls_sql_hospital",
 					"type": "LinkedServiceReference"
 				},
+				"folder": {
+					"name": "ds_silver"
+				},
 				"annotations": [],
 				"type": "AzureSqlTable",
 				"schema": [
@@ -477,6 +902,9 @@
 				"linkedServiceName": {
 					"referenceName": "ls_sql_hospital",
 					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "ds_silver"
 				},
 				"annotations": [],
 				"type": "AzureSqlTable",
@@ -527,6 +955,9 @@
 				"linkedServiceName": {
 					"referenceName": "ls_sql_hospital",
 					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "ds_silver"
 				},
 				"annotations": [],
 				"type": "AzureSqlTable",
@@ -597,10 +1028,139 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/df_gold_dim_fecha')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "df_gold"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_silver_admisiones",
+								"type": "DatasetReference"
+							},
+							"name": "srccalendario"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_gold_dim_fecha",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "dercolumnasfecha"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          fecha_completa as date",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     query: '\\nSELECT\\n    DATEADD(\\n        DAY,\\n        ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) - 1,\\n        CAST(\\'2023-01-01\\' AS DATE)\\n    ) AS fecha_completa\\nFROM sys.all_objects a\\nCROSS JOIN sys.all_objects b\\n',",
+						"     format: 'query') ~> srccalendario",
+						"srccalendario derive(fecha_key = toInteger(toString(fecha_completa, 'yyyyMMdd')),",
+						"          anio = toShort(year(fecha_completa)),",
+						"          trimestre = toByte(ceil(month(fecha_completa) / 3.0)),",
+						"          trimestre_nombre = case(\r",
+						"    month(fecha_completa) <= 3, 'T1',\r",
+						"    month(fecha_completa) <= 6, 'T2',\r",
+						"    month(fecha_completa) <= 9, 'T3',\r",
+						"    'T4'\r",
+						"),",
+						"          mes = toByte(month(fecha_completa)),",
+						"          mes_nombre = case(\r",
+						"    month(fecha_completa) == 1, 'Enero',\r",
+						"    month(fecha_completa) == 2, 'Febrero',\r",
+						"    month(fecha_completa) == 3, 'Marzo',\r",
+						"    month(fecha_completa) == 4, 'Abril',\r",
+						"    month(fecha_completa) == 5, 'Mayo',\r",
+						"    month(fecha_completa) == 6, 'Junio',\r",
+						"    month(fecha_completa) == 7, 'Julio',\r",
+						"    month(fecha_completa) == 8, 'Agosto',\r",
+						"    month(fecha_completa) == 9, 'Septiembre',\r",
+						"    month(fecha_completa) == 10, 'Octubre',\r",
+						"    month(fecha_completa) == 11, 'Noviembre',\r",
+						"    'Diciembre'\r",
+						"),",
+						"          mes_corto = case(\r",
+						"    month(fecha_completa) == 1, 'Ene',\r",
+						"    month(fecha_completa) == 2, 'Feb',\r",
+						"    month(fecha_completa) == 3, 'Mar',\r",
+						"    month(fecha_completa) == 4, 'Abr',\r",
+						"    month(fecha_completa) == 5, 'May',\r",
+						"    month(fecha_completa) == 6, 'Jun',\r",
+						"    month(fecha_completa) == 7, 'Jul',\r",
+						"    month(fecha_completa) == 8, 'Ago',\r",
+						"    month(fecha_completa) == 9, 'Sep',\r",
+						"    month(fecha_completa) == 10, 'Oct',\r",
+						"    month(fecha_completa) == 11, 'Nov',\r",
+						"    'Dic'\r",
+						"),",
+						"          semana_anio = toByte(weekOfYear(fecha_completa)),",
+						"          dia_mes = toByte(dayOfMonth(fecha_completa)),",
+						"          dia_semana = toByte(mod(dayOfWeek(fecha_completa) + 5, 7) + 1),",
+						"          dia_nombre = case(\r",
+						"    dayOfWeek(fecha_completa) == 1, 'Domingo',\r",
+						"    dayOfWeek(fecha_completa) == 2, 'Lunes',\r",
+						"    dayOfWeek(fecha_completa) == 3, 'Martes',\r",
+						"    dayOfWeek(fecha_completa) == 4, 'Miercoles',\r",
+						"    dayOfWeek(fecha_completa) == 5, 'Jueves',\r",
+						"    dayOfWeek(fecha_completa) == 6, 'Viernes',\r",
+						"    'Sabado'\r",
+						"),",
+						"          es_fin_de_semana = dayOfWeek(fecha_completa) == 1 || dayOfWeek(fecha_completa) == 7) ~> dercolumnasfecha",
+						"dercolumnasfecha sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          fecha_key as integer,",
+						"          fecha_completa as date,",
+						"          anio as integer,",
+						"          trimestre as integer,",
+						"          trimestre_nombre as string,",
+						"          mes as integer,",
+						"          mes_nombre as string,",
+						"          mes_corto as string,",
+						"          semana_anio as integer,",
+						"          dia_mes as integer,",
+						"          dia_semana as integer,",
+						"          dia_nombre as string,",
+						"          es_fin_de_semana as boolean",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_silver_admisiones')]",
+				"[concat(variables('factoryId'), '/datasets/ds_gold_dim_fecha')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/df_silver_admisiones')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
+				"folder": {
+					"name": "df_silver"
+				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
 					"sources": [
@@ -748,6 +1308,9 @@
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
+				"folder": {
+					"name": "df_silver"
+				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
 					"sources": [
@@ -871,6 +1434,9 @@
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
+				"folder": {
+					"name": "df_silver"
+				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
 					"sources": [
@@ -1000,6 +1566,9 @@
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
+				"folder": {
+					"name": "df_silver"
+				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
 					"sources": [
