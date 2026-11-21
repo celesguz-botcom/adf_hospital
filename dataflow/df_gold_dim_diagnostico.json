@@ -6,11 +6,72 @@
 		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
-			"sources": [],
-			"sinks": [],
-			"transformations": [],
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_silver_diagnosticos",
+						"type": "DatasetReference"
+					},
+					"name": "srcdiagnostico"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_gold_dim_diagnostico",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "dercolumnasdiagnostico"
+				},
+				{
+					"name": "aggregate1"
+				}
+			],
 			"scriptLines": [
-				""
+				"source(output(",
+				"          diagnosis_id as integer,",
+				"          admission_id as integer,",
+				"          icd_code as string,",
+				"          diagnosis_description as string,",
+				"          severity as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> srcdiagnostico",
+				"srcdiagnostico derive(codigo_icd = toString(icd_code),",
+				"          descripcion_patologia = toString(diagnosis_description),",
+				"          nivel_severidad = toString(severity)) ~> dercolumnasdiagnostico",
+				"dercolumnasdiagnostico aggregate(groupBy(codigo_icd,",
+				"          descripcion_patologia,",
+				"          nivel_severidad),",
+				"     cantidad_registros = count(1)) ~> aggregate1",
+				"aggregate1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          diagnostico_key as integer,",
+				"          codigo_icd as string,",
+				"          descripcion_patologia as string,",
+				"          nivel_severidad as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          codigo_icd,",
+				"          descripcion_patologia,",
+				"          nivel_severidad",
+				"     )) ~> sink1"
 			]
 		}
 	}
