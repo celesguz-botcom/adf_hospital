@@ -1,5 +1,5 @@
 {
-	"name": "ds_silver_pacientes",
+	"name": "ds_silver_pacientes_backup",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "ls_sql_hospital",
