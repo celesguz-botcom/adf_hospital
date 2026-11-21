@@ -1,5 +1,5 @@
 {
-	"name": "ds_bronze_pacientes",
+	"name": "ds_bronze_pacientes_backup",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "ls_sql_hospital",
