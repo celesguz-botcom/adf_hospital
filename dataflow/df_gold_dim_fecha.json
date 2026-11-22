@@ -30,6 +30,9 @@
 				},
 				{
 					"name": "filter1"
+				},
+				{
+					"name": "alterRow1"
 				}
 			],
 			"scriptLines": [
@@ -93,7 +96,8 @@
 				"),",
 				"          es_fin_de_semana = dayOfWeek(fecha_completa) == 1 || dayOfWeek(fecha_completa) == 7) ~> dercolumnasfecha",
 				"dercolumnasfecha filter(!isNull(fecha_completa)) ~> filter1",
-				"filter1 sink(allowSchemaDrift: true,",
+				"filter1 alterRow(upsertIf(true())) ~> alterRow1",
+				"alterRow1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          fecha_key as integer,",
