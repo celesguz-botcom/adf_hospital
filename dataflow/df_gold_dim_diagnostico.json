@@ -33,6 +33,9 @@
 				},
 				{
 					"name": "filter1"
+				},
+				{
+					"name": "alterRow1"
 				}
 			],
 			"scriptLines": [
@@ -55,7 +58,8 @@
 				"          nivel_severidad),",
 				"     cantidad_registros = count(1)) ~> aggregate1",
 				"aggregate1 filter(!isNull(nivel_severidad)) ~> filter1",
-				"filter1 sink(allowSchemaDrift: true,",
+				"filter1 alterRow(upsertIf(true())) ~> alterRow1",
+				"alterRow1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          diagnostico_key as integer,",
