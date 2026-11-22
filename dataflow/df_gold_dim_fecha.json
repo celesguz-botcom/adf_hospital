@@ -33,6 +33,9 @@
 				},
 				{
 					"name": "filter1"
+				},
+				{
+					"name": "filter2"
 				}
 			],
 			"scriptLines": [
@@ -95,8 +98,9 @@
 				"    'Sabado'\r",
 				"),",
 				"          es_fin_de_semana = dayOfWeek(fecha_completa) == 1 || dayOfWeek(fecha_completa) == 7) ~> dercolumnasfecha",
-				"dercolumnasfecha alterRow(upsertIf(true())) ~> alterRow1",
+				"filter2 alterRow(upsertIf(true())) ~> alterRow1",
 				"srccalendario filter(!isNull(fecha_completa)) ~> filter1",
+				"dercolumnasfecha filter(!isNull(trimestre)) ~> filter2",
 				"alterRow1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
