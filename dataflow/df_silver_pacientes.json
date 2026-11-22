@@ -18,7 +18,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "ds_silver_pacientes_backup",
+						"referenceName": "ds_silver_pacientes",
 						"type": "DatasetReference"
 					},
 					"name": "sink1"
