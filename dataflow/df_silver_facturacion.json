@@ -30,6 +30,9 @@
 				},
 				{
 					"name": "alterRow1"
+				},
+				{
+					"name": "filter1"
 				}
 			],
 			"scriptLines": [
@@ -100,7 +103,8 @@
 				"        )\r",
 				"    )\r",
 				")) ~> derivedColumn1",
-				"derivedColumn1 alterRow(upsertIf(true())) ~> alterRow1",
+				"filter1 alterRow(upsertIf(true())) ~> alterRow1",
+				"derivedColumn1 filter(!isNull(amount)) ~> filter1",
 				"alterRow1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
