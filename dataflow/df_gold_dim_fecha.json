@@ -29,10 +29,10 @@
 					"name": "dercolumnasfecha"
 				},
 				{
-					"name": "filter1"
+					"name": "alterRow1"
 				},
 				{
-					"name": "alterRow1"
+					"name": "filter1"
 				}
 			],
 			"scriptLines": [
@@ -44,7 +44,7 @@
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     query: '\\nSELECT\\n    DATEADD(\\n        DAY,\\n        ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) - 1,\\n        CAST(\\'2023-01-01\\' AS DATE)\\n    ) AS fecha_completa\\nFROM sys.all_objects a\\nCROSS JOIN sys.all_objects b\\n',",
 				"     format: 'query') ~> srccalendario",
-				"srccalendario derive(fecha_key = toInteger(toString(fecha_completa, 'yyyyMMdd')),",
+				"filter1 derive(fecha_key = toInteger(toString(fecha_completa, 'yyyyMMdd')),",
 				"          anio = toShort(year(fecha_completa)),",
 				"          trimestre = toByte(ceil(month(fecha_completa) / 3.0)),",
 				"          trimestre_nombre = case(\r",
@@ -95,8 +95,8 @@
 				"    'Sabado'\r",
 				"),",
 				"          es_fin_de_semana = dayOfWeek(fecha_completa) == 1 || dayOfWeek(fecha_completa) == 7) ~> dercolumnasfecha",
-				"dercolumnasfecha filter(!isNull(fecha_completa)) ~> filter1",
-				"filter1 alterRow(upsertIf(true())) ~> alterRow1",
+				"dercolumnasfecha alterRow(upsertIf(true())) ~> alterRow1",
+				"srccalendario filter(!isNull(fecha_completa)) ~> filter1",
 				"alterRow1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
