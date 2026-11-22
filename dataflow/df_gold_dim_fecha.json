@@ -126,7 +126,18 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          fecha_key,",
+				"          fecha_completa,",
+				"          anio,",
+				"          trimestre,",
+				"          trimestre_nombre,",
+				"          mes_nombre,",
+				"          mes_corto,",
+				"          dia_nombre,",
+				"          es_fin_de_semana",
+				"     )) ~> sink1"
 			]
 		}
 	}
