@@ -30,6 +30,9 @@
 				},
 				{
 					"name": "aggregate1"
+				},
+				{
+					"name": "filter1"
 				}
 			],
 			"scriptLines": [
@@ -51,7 +54,8 @@
 				"          descripcion_patologia,",
 				"          nivel_severidad),",
 				"     cantidad_registros = count(1)) ~> aggregate1",
-				"aggregate1 sink(allowSchemaDrift: true,",
+				"aggregate1 filter(!isNull(nivel_severidad)) ~> filter1",
+				"filter1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          diagnostico_key as integer,",
