@@ -136,7 +136,8 @@
 				"          mes_nombre,",
 				"          mes_corto,",
 				"          dia_nombre,",
-				"          es_fin_de_semana",
+				"          es_fin_de_semana,",
+				"          mes",
 				"     )) ~> sink1"
 			]
 		}
