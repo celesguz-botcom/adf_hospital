@@ -27,6 +27,9 @@
 			"transformations": [
 				{
 					"name": "dercolumnasfecha"
+				},
+				{
+					"name": "filter1"
 				}
 			],
 			"scriptLines": [
@@ -89,7 +92,8 @@
 				"    'Sabado'\r",
 				"),",
 				"          es_fin_de_semana = dayOfWeek(fecha_completa) == 1 || dayOfWeek(fecha_completa) == 7) ~> dercolumnasfecha",
-				"dercolumnasfecha sink(allowSchemaDrift: true,",
+				"dercolumnasfecha filter(!isNull(fecha_completa)) ~> filter1",
+				"filter1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          fecha_key as integer,",
