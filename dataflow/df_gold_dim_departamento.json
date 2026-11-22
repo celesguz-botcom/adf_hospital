@@ -27,6 +27,9 @@
 			"transformations": [
 				{
 					"name": "aggregate1"
+				},
+				{
+					"name": "alterRow1"
 				}
 			],
 			"scriptLines": [
@@ -44,7 +47,8 @@
 				"     format: 'table') ~> srcdepartamento",
 				"srcdepartamento aggregate(groupBy(department),",
 				"     nombre_departamento = first(department)) ~> aggregate1",
-				"aggregate1 sink(allowSchemaDrift: true,",
+				"aggregate1 alterRow(upsertIf(true())) ~> alterRow1",
+				"alterRow1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          departamento_key as integer,",
